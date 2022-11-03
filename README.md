@@ -1,4 +1,4 @@
-# Calculadora
+# Introdução
 Calculadora Assembly 
 
 Calculadora feita em Assembly x86 - Matéria Organização De Sistemas De Computação ( Segundo Semestre ) 
