@@ -2,595 +2,571 @@ TITLE Pedro Di Grazia (22002293), Pedro Pistarini (22000341)
 .model small
 .data
 
-       ; Criando variaveis
-       op1 db ?                   
-       op2 db ?
-       operando db ?
+    ; Criando variaveis
+    op1 db ?                   
+    op2 db ?
+    operando db ?
 
 
-       Titulo db     '<---------------------------- Calculadora - Assembly --------------------------> $'
-       cabecalho db  '================================================================================ $'    
+    Titulo db     '<---------------------------- Calculadora - Assembly --------------------------> $'
+    cabecalho db  '================================================================================ $'    
 
-       Instrucao1 db '-> Digite o primeiro numero (0 a 9): $'
-             
-       Instrucao2 db '-> Digite o segundo numero [0 a 9]: $'
+    Instrucao1 db '-> Digite o primeiro numero (0 a 9): $'
             
-       Operador db   '-> Digite a operacao(+ - * /): $'
-             
-       Resultado db  '-> Resultado: $'
+    Instrucao2 db '-> Digite o segundo numero [0 a 9]: $'
+        
+    Operador db   '-> Digite a operacao(+ - * /): $'
+            
+    Resultado db  '-> Resultado: $'
 
-       Erro db       '-> Operando nao eh valido, digite outro! $'
-       Numeroinvalido db '-> Numero invalido, tente outro! $'
-       
-       continuacao db '-> Deseja continuar (S / N): $'
+    Erro db       '-> Operando nao eh valido, digite outro! $'
+    Numeroinvalido db '-> Numero invalido, tente outro! $'
+    
+    continuacao db '-> Deseja continuar (S / N): $'
        
 .code
     
-       ; Função Soma
-       soma proc                           ; Cria função
-              mov cl,op1                          ; Jogando valor de op1 para cl
-              sub cl,30h                          ; Subtraindo 30h da tabela ascii
+    ; Função Soma
+    soma proc                               ; Cria função
 
-              mov bl,op2                        
-              sub bl,30h                          ; Subtraindo 30h da tabela ascii
+        mov cl,op1                          ; Jogando valor de op1 para cl
+        sub cl,30h                          ; Subtraindo 30h da tabela ascii
 
-              add cl,bl                    ; Adicionando cl com bl
-              add cl, 30h                  ; Acionando 30h na tabela ascii
-              call duascasasdecimais
+        mov bl,op2                        
+        sub bl,30h                          ; Subtraindo 30h da tabela ascii
 
-       ret                                 ; Retorno função
-       soma endp   
+        add cl,bl                    ; Adicionando cl com bl
+        add cl, 30h                  ; Acionando 30h na tabela ascii
+        call duascasasdecimais
 
-       ; Função Subtração
-       subtracao proc                      ; Cria função
-              mov ch,op1                   ; Jogando valor de op1 para ch
-              sub ch,30h                   ; Subraindo 30h da tabela ascii
+    ret                                 ; Retorno função
+    soma endp   
 
-              mov bl,ch                    ; Jogando valor de ch para bl, para não perder o valor de ch
+    ; Função Subtração
+    subtracao proc                      ; Cria função
 
-              mov cl,op2                   ; Jogando valor de op2 para cl
-              sub cl,30h                   ; Subtraindo 30h da tabela ascii
+        mov ch,op1                   ; Jogando valor de op1 para ch
+        sub ch,30h                   ; Subraindo 30h da tabela ascii
 
-              sub bl,cl                    ; Pegando o valor que foi jogado para bl e subtraindo com cl
-              js negativo                  ; Verifica se o numero for negativo
-              jns positivo                 ; Verifica se o numero é positivo
-              
-              negativo:                    ; Se for negativo o neg é realizado  
-                     neg bl                ; Transforma o numero em negativo
-              positivo:
+        mov bl,ch                    ; Jogando valor de ch para bl, para não perder o valor de ch
 
-              add bl,30h                   ; Retornando o valor original na tabela ascii
-              add ch,30h                   ; Retornando o valor original na tabela ascii
-              add cl,30h                   ; Retornando o valor original na tabela ascii
+        mov cl,op2                   ; Jogando valor de op2 para cl
+        sub cl,30h                   ; Subtraindo 30h da tabela ascii
 
-              cmp ch, cl                   ; Compara ch com cl
-              jae chmaior                  ; Caso ch seja maior ele pula, caso contrario continua
+        sub bl,cl                    ; Pegando o valor que foi jogado para bl e subtraindo com cl
+        js negativo                  ; Verifica se o numero for negativo
+        jns positivo                 ; Verifica se o numero é positivo
+        
+        negativo:                    ; Se for negativo o neg é realizado  
+        neg bl                       ; Transforma o numero em negativo
+        positivo:
 
+        add bl,30h                   ; Retornando o valor original na tabela ascii
+        add ch,30h                   ; Retornando o valor original na tabela ascii
+        add cl,30h                   ; Retornando o valor original na tabela ascii
 
-                     call resultado1
-
-                     mov dl,'-'
-                     mov ah,2              ; Printando sinal de '-'
-                     int 21h
-
-                     mov dl,bl
-                     mov ah,2              ; Jogando valor da subtração para dl
-                     int 21h
-
-                     jmp fim               ; Pular para fim do programa para não continuar realizando operações não desejadas
+        cmp ch, cl                   ; Compara ch com cl
+        jae chmaior                  ; Caso ch seja maior ele pula, caso contrario continua
 
 
-              chmaior:                      ; Pula aqui quando ch for maior que cl
+            call resultado1
 
-                     call resultado1
+            mov dl,'-'
+            mov ah,2              ; Printando sinal de '-'
+            int 21h
 
-                     mov dl,bl
-                     mov ah,2                   ; Passa valor da subtração para dl e assim printar o valor
-                     int 21h
+            mov dl,bl
+            mov ah,2              ; Jogando valor da subtração para dl
+            int 21h
+
+            jmp fim               ; Pular para fim do programa para não continuar realizando operações não desejadas
 
 
-              ret                          ; Retorno função
-       subtracao endp
+        chmaior:                      ; Pula aqui quando ch for maior que cl
 
-       ; Função Multiplicação
-       multiplicacao proc
+            call resultado1
 
-       mov bh,op1                         ; Joga valor para bh
-       mov bl,op2                         ; Joga valor para bl
+            mov dl,bl
+            mov ah,2                   ; Passa valor da subtração para dl e assim printar o valor
+            int 21h
 
-       sub bh, 30h
-       sub bl, 30h
 
-              xor cl,cl                   ; Zera valor de cl
+    ret                          ; Retorno função
+    subtracao endp
 
-              pular:
+    ; Função Multiplicação
+    multiplicacao proc
 
-              shr bl, 1              
-              jnc igual0                  ; Verifica primeiro numero do multiplicador
+    mov bh,op1                         ; Joga valor para bh
+    mov bl,op2                         ; Joga valor para bl
 
-              add cl, bh                  ; Se o primeiro valor for 1 ele joga pra outro registrador
+    sub bh, 30h
+    sub bl, 30h
 
-              igual0:                     ; Caso seja zero 
-              
-              shl bh, 1                   ; Ocorre uma rotação em BH onde está o multiplicando 
+        xor cl,cl                   ; Zera valor de cl
 
-              cmp bl,0                    ; Comparando bl com 0, porque ñ tem sentido continuar rodando, 
-              jne pular                   ; quando não se tem mais nada dentro
-                     
-              add cl, 30h
-              call duascasasdecimais      ; Chamada de função
+        pular:
 
-       ret
-       multiplicacao endp
+        shr bl, 1              
+        jnc igual0                  ; Verifica primeiro numero do multiplicador
 
-       ; Função divisão
-       divisao proc
+        add cl, bh                  ; Se o primeiro valor for 1 ele joga pra outro registrador
 
-       mov bh,op1
-       mov bl,op2
+        igual0:                     ; Caso seja zero 
+        
+        shl bh, 1                   ; Ocorre uma rotação em BH onde está o multiplicando 
 
-       sub bh, 30h      
-       sub bl, 30h      
+        cmp bl,0                    ; Comparando bl com 0, porque ñ tem sentido continuar rodando, 
+        jne pular                   ; quando não se tem mais nada dentro
+                
+        add cl, 30h
+        call duascasasdecimais      ; Chamada de função
 
-       cmp bh,bl  
-       je iguais 
-       jmp iguaisdi
+    ret
+    multiplicacao endp
 
-       iguais:
-       mov cl,31h
-       call duascasasdecimais
-       jmp finaldivi
+    ; Função divisão
+    divisao proc
 
-       iguaisdi:
+    mov bh,op1
+    mov bl,op2
 
-       test bh,01h
-       jnz somaimpar
+    sub bh, 30h      
+    sub bl, 30h      
 
-       testaoutro:
-       test bl,01h 
-       jnz somaimpar
+    cmp bh,bl  
+    je iguais                       ; Se forem igual pula
+    jmp pulaigual
 
-       somaimpar:
-       inc cl
-       cmp cl,2
-       je impardivisao
-       jmp testaoutro
-       cmp cl,2
-       je impardivisao
+    iguais:
+    mov cl,31h                      ; Printa resultado
+    call duascasasdecimais
+    jmp finaldivi                   ; Pula pro final
 
-       xor cl,cl     
+    pulaigual:                      ; Se não forem iguais
 
-            pulard:
+    jmp divisaogeral                ; Pula para divisao geral
 
-            shr bl, 1             
-            jnc igual01          
+    resultpar:
 
-            add cl, bh          
+    shr bl, 1        ;0400           
+    jnc Divisaopar         
 
-            igual01:
+    add cl, bh      ;04     
+    jmp finaldadivi
+
+    Divisaopar:
+    
+        shr bh, 1        ;0401  
+                            
+        cmp bl,0           
+        jne resultpar
+                
+        add cl, 30h         
+        call duascasasdecimais
+        
+        jmp finaldivi
+
+        divisaogeral:
+        xor cl,cl    ;CL = 00
+
+        pulardi:
+
+        shr bl, 1           ;0903 -> 0901         
+        jnc Divisaopar      ;Se for um numero impar tera carry, se não não!       
+
+        add cl, bh        
+
+        Divisaoimpar:     
+        
+        shr bh, 1        
+                            
+        jmp pulad
+
+        impardivi:
+        xchg ch,bl     ;CH = 01
+
+        sub bh,ch      ; 
+        mov cl,bh     
+
+        pulad:  
+        cmp bl,1        ;0401
+        je impardivi
+
+        finaldadivi:
+        add cl, 30h         
+        call duascasasdecimais
+        finaldivi:
+        ret
+    divisao endp
+
+    ; Função para printar duas casas decimais
+    duascasasdecimais proc
+
+        xor ax,ax                      ; Zera registrador ax
+        mov al,cl                      ; Joga o resultado da soma em al
+        sub al,30h                     ; Tirando 30h da tabela ascii
+
+        mov bl,10                      ; Jogando valor de 10 para bl 
+
+        div bl                         ; Usando valor jogado para bl para dividir al
+
+        mov bx,ax                      ; Assim que dividido separa o resultado em al e outro para ah, assim jogado para bx os valores que estão em ax
+        mov dl,bl                      ; Pegando o primeiro valor separado e joga para dl
+        or dl, 30h                     ; Adcionando 30h da tabela ascii para printar o numero
+        mov ah, 2                      ; Printar o numero
+        int 21h 
+
+        mov dl,bh                      ; Pegar o outro valor do restultado e jogar em dl
+        or dl, 30h                     ; Adiciona 30h da tabela ascii para printar o numero 
+        mov ah, 2                      ; Printar o numero
+        int 21h
+
+    ret
+    duascasasdecimais endp
+
+    ; Função Pula
+    pula proc
+
+        mov dl,10
+        mov ah,2                     ; Função pula 1 linha
+        int 21h
+
+    ret
+    pula endp  
+
+    ; Função Pula
+    pula1 proc
+
+        mov dl,10
+        mov ah,2                     ; Função pula 2 linhas
+        int 21h
+        int 21h
+
+    ret
+    pula1 endp
+
+    ; Imprimindo a operação na tela
+    resultado1 proc
+
+        lea dx,Resultado        
+        mov ah,9                    ; Printa resultado
+        int 21h
+
+        mov ah,2
+        mov dl, op1                 ; Jogando valor de op1 para dl
+        int 21h
+
+        mov ah,02
+        mov dl,32                   ; Print 'espaço'
+        int 21h
+
+        mov ah,2
+        mov dl,operando             ; Jogando valor do operando para dl
+        int 21h
+
+        mov ah,02
+        mov dl,32                   ; Print 'espaço'
+        int 21h
+
+        mov ah,2 
+        mov dl,op2                  ; Jogando valor de op2 para dl
+        int 21h
+
+        mov ah,02
+        mov dl,32                   ; Print 'espaço'
+        int 21h
+
+        mov ah,02
+        mov dl,'='                  ; Print '='
+        int 21h
+
+        mov ah,02
+        mov dl,32                   ; Print 'espaço'
+        int 21h
+
+    ret 
+    resultado1 endp
+
+    ; Validação dos sinais
+    validasinal proc
+
+        operadornovo:
+
+            lea dx,Operador
+            mov ah,9                    ; Printa Operador
+            int 21h
+
+            mov ah,1                    ; Digitar um Operador
+            int 21h       
+            mov operando,al             ; Passar al para operando
+
+            cmp operando, '+'            ; Compara com '+' na tabela ascii   
+            je existe                   ; Se for igual pula se não ele continua 
+            cmp operando, '-'            ; Compara com '-' na tabela ascii 
+            je existe                   ; Se for igual pula se não ele continua
+            cmp operando, '*'            ; Compara com '*' na tabela ascii
+            je existe                   ; Se for igual pula se não ele continua
+            cmp operando, '/'            ; Compara com '/' na tabela ascii
+            je existe                   ; Se for igual pula se não ele continua
+
+                call pula1
+
+                lea dx, erro
+                mov ah,09                   ; Printa mensagem 
+                int 21h
+                
+                call pula1
+
+            jmp operadornovo            ; Caso não seja igual a nenhum dos numeros ele pula e pede outro operando 
+        
+        existe:
+
+    ret 
+    validasinal endp
+
+    ; Validação dos numeros
+    validanumero1 proc
+
+        outronumero:
+
+            call pula1                  ; Função Pula linha
+
+            lea dx,Instrucao1            
+            mov ah,9                    ; Printa instrucao1
+            int 21h
+
+            mov ah,1                    ; Digitar o primeiro numero
+            int 21h 
+
+            cmp al, '9'                          
+            jle menor9                  ; Salta se AL for menor do que '9' caso contrario ele continua  
+
+                call pula 
+
+                lea dx,Numeroinvalido 
+                mov ah,9
+                int 21h
+                
+                jmp outronumero             ; Jump para retornar e colocar um numero correto
+
+            menor9:                     ; Pula caso o Al for menor que 47
+
+                cmp al,'0'
+                jge maior0                  ; Se o al for menor que 48 ele continua, caso contrario ele pula
+
+                call pula 
+
+                lea dx,Numeroinvalido       
+                mov ah,9
+                int 21h
             
-            shr bh, 1          
-                               
-            cmp bl,0           
-            jne pulard
-                    
-            add cl, 30h         
-            call duascasasdecimais
-       
-       jmp finaldivi
+            jmp outronumero             ; Jump para retornar e colocar um numero correto
 
-       impardivisao:
-            xor cl,cl    
+            maior0:                     ; Pula quando o valor de al for maior de 48
 
-            pulardi:
+            mov op1,al                  ; Jogando o numero al para op1
 
-            shr bl, 1              
-            jnc igual01          
+            call pula1
 
-            add cl, bh          
+    ret 
+    validanumero1 endp
 
-            igual001:
+    ; Validação dos numeros
+    validanumero2 proc
+
+        outronumero2:
+
+            call pula1                  ; Função Pula linha
+
+            lea dx,Instrucao2            
+            mov ah,9                    ; Printa instrucao1
+            int 21h
+
+            mov ah,1                    ; Digitar o primeiro numero
+            int 21h 
+
+            cmp al, '9'                          
+            jle Menor09                  ; Salta se AL for menor do que '9' caso contrario ele continua  
+
+                call pula 
+
+                lea dx,Numeroinvalido 
+                mov ah,9
+                int 21h
+                
+                jmp outronumero2             ; Jump para retornar e colocar um numero correto
+
+            Menor09:                     ; Pula caso o Al for menor que 47
+
+            cmp al,'0'
+            jge Maior00                  ; Se o al for menor que 48 ele continua, caso contrario ele pula
+
+                call pula 
+
+                lea dx,Numeroinvalido       
+                mov ah,9
+                int 21h
+                
+            jmp outronumero             ; Jump para retornar e colocar um numero correto
+
+            Maior00:                     ; Pula quando o valor de al for maior de 48
+
+        mov op2,al                  ; Jogando o numero al para op1
+
+    ret 
+    validanumero2 endp
+
+    ; Função que verifica sinal
+    verifica_sinal proc
+
+        cmp operando,'+'                           ; Comparando o operando com '+'
+        je mais                                    ; Se o operando for igual ao simbolo '+' ele pula, caso contrario ele continua
+
+            cmp operando,'-'                    ; Comparando o operando com '+'
+            je menos                            ; Se o operando for igual ao simbolo '-' ele pula, caso contrario ele continua
+
+                cmp operando,'*'             ; Comparando o operando com '*'
+                je multi                     ; Se for igual ao '*' ele pula
+
+                    cmp operando,'/'      ; Comparando operando com '/'
             
-            shr bh, 1          
-                               
-            jmp pulaimpardivi
-
-            impardivi:
-            xchg ch,bl        
-
-            sub bh,ch          
-            mov cl,bh          
-
-            pulaimpardivi:  
-            cmp bl,1        
-            je impardivi
-
-            mov bl,ch       
-
-            cmp bl,1 
-            je subtrairum
-            jmp parte
-
-            subtrairum:
-            sub bl,1
-
-            parte: 
-            cmp bl,0        
-            jne pulardi
-  
-            add cl, 30h         
-            call duascasasdecimais
-       finaldivi:
-       ret
-       divisao endp
-
-       ; Função para printar duas casas decimais
-       duascasasdecimais proc
-
-              xor ax,ax                      ; Zera registrador ax
-              mov al,cl                      ; Joga o resultado da soma em al
-              sub al,30h                     ; Tirando 30h da tabela ascii
-
-              mov bl,10                      ; Jogando valor de 10 para bl 
-
-              div bl                         ; Usando valor jogado para bl para dividir al
-
-              mov bx,ax                      ; Assim que dividido separa o resultado em al e outro para ah, assim jogado para bx os valores que estão em ax
-              mov dl,bl                      ; Pegando o primeiro valor separado e joga para dl
-              or dl, 30h                     ; Adcionando 30h da tabela ascii para printar o numero
-              mov ah, 2                      ; Printar o numero
-              int 21h 
-
-              mov dl,bh                      ; Pegar o outro valor do restultado e jogar em dl
-              or dl, 30h                     ; Adiciona 30h da tabela ascii para printar o numero 
-              mov ah, 2                      ; Printar o numero
-              int 21h
-
-              ret
-       duascasasdecimais endp
-
-       ; Função Pula
-       pula proc
-
-              mov dl,10
-              mov ah,2                     ; Função pula 1 linha
-              int 21h
-       
-       ret
-       pula endp  
-
-       ; Função Pula
-       pula1 proc
-             
-              mov dl,10
-              mov ah,2                     ; Função pula 2 linhas
-              int 21h
-              int 21h
-       
-       ret
-       pula1 endp
+                        call limpa_tela      
+                        call cabecalho1
+                        call pula1                 ; Chamada de Funções
+                        call resultado1
+                        call divisao
+                
+                    jmp fim
+
+                multi:
+
+                    call limpa_tela
+                    call cabecalho1
+                    call pula1                  ; Chamada de Funções
+                    call resultado1
+                    call multiplicacao
+                
+                jmp fim
+                                        
+            menos:                        ; Caso seja sinal de '-'
 
-       ; Imprimindo a operação na tela
-       resultado1 proc
-
-              lea dx,Resultado        
-              mov ah,9                    ; Printa resultado
-              int 21h
+                call limpa_tela
+                call cabecalho1
+                call pula                   ; Chamada de Funções
+                call subtracao               
+            
+            jmp fim                      
 
-              mov ah,2
-              mov dl, op1                 ; Jogando valor de op1 para dl
-              int 21h
+        mais:                             ; Caso seja utlizado o sinal de '+'
+                                            
+            call limpa_tela
+            call cabecalho1                       
+            call pula                   ; Chamada de Funções
+            call resultado1               
+            call soma
 
-              mov ah,02
-              mov dl,32                   ; Print 'espaço'
-              int 21h
+        fim:                                ; Pular para o fim do programa
 
-              mov ah,2
-              mov dl,operando             ; Jogando valor do operando para dl
-              int 21h
+    ret
+    verifica_sinal endp
 
-              mov ah,02
-              mov dl,32                   ; Print 'espaço'
-              int 21h
+    ; Função que limpa a tela
+    limpa_tela proc
 
-              mov ah,2 
-              mov dl,op2                  ; Jogando valor de op2 para dl
-              int 21h
+        mov ah, 00h
+        mov al, 03h
+        int 10h                     ; Comando com funcionalidade de limpar a tela 
+        mov cx, 02h
 
-              mov ah,02
-              mov dl,32                   ; Print 'espaço'
-              int 21h
+        mov dh,1
+        mov dl,1
+        mov ah,02h
+        int 10h
 
-              mov ah,02
-              mov dl,'='                  ; Print '='
-              int 21h
+    ret
+    limpa_tela endp
 
-              mov ah,02
-              mov dl,32                   ; Print 'espaço'
-              int 21h
+    ; Função que printa o cabeçalho
+    cabecalho1 proc
 
-       ret 
-       resultado1 endp
+        call pula
+        lea dx,cabecalho             ; Printa cabçalho
+        mov ah,9
+        int 21h
 
-       ; Validação dos sinais
-       validasinal proc
+        call pula
+        lea dx,Titulo
+        mov ah,9                     ; Printa Titulo
+        int 21h
 
-              operadornovo:
+        call pula
+        lea dx,cabecalho             ; Printa cabeçalho
+        mov ah,9
+        int 21h
 
-              lea dx,Operador
-              mov ah,9                    ; Printa Operador
-              int 21h
+    ret
+    cabecalho1 endp
 
-              mov ah,1                    ; Digitar um Operador
-              int 21h       
-              mov operando,al             ; Passar al para operando
+    ; Função que verifica se quer continuar ou não
+    continuacao1 proc
 
-              cmp operando, '+'            ; Compara com '+' na tabela ascii   
-              je existe                   ; Se for igual pula se não ele continua 
-              cmp operando, '-'            ; Compara com '-' na tabela ascii 
-              je existe                   ; Se for igual pula se não ele continua
-              cmp operando, '*'            ; Compara com '*' na tabela ascii
-              je existe                   ; Se for igual pula se não ele continua
-              cmp operando, '/'            ; Compara com '/' na tabela ascii
-              je existe                   ; Se for igual pula se não ele continua
+        mov ah, 09
+        lea dx, continuacao         ; Printa continuação
+        int 21h
 
-                     call pula1
+        mov ah, 01                  ; Entrada de caracter
+        int 21h
 
-                     lea dx, erro
-                     mov ah,09                   ; Printa mensagem 
-                     int 21h
-                     
-                     call pula1
+        cmp al, 'S'                 ; Se for digitado 'S' ou 's' ele vai pro começo do codigo,
+        je comeco                   ; e está pronto para começar uma nova operação
+        cmp al, 's'
+        je comeco
 
-                     jmp operadornovo            ; Caso não seja igual a nenhum dos numeros ele pula e pede outro operando 
-              
-              existe:
+        ret
+    continuacao1 endp
 
-       ret 
-       validasinal endp
+    ; Função encerraento
+    final proc
 
-       ; Validação dos numeros
-       validanumero1 proc
+        mov ah,4ch                          ; Encerramento do programa 
+        int 21h
 
-              outronumero:
+        ret
+    final endp
 
-                     call pula1                  ; Função Pula linha
+    ; Função pro segmento de data
+    segmento proc
 
-                     lea dx,Instrucao1            
-                     mov ah,9                    ; Printa instrucao1
-                     int 21h
+        mov ax,@data                 ; Move o segmento data para ax         
+        mov ds,ax
 
-                     mov ah,1                    ; Digitar o primeiro numero
-                     int 21h 
+        ret
+    segmento endp
 
-                     cmp al, '9'                          
-                     jle menor9                  ; Salta se AL for menor do que '9' caso contrario ele continua  
+    main proc   
 
-                            call pula 
+        comeco:                     ; Jump condicional para a calculadora ser recomeçada
 
-                            lea dx,Numeroinvalido 
-                            mov ah,9
-                            int 21h
-                            
-                            jmp outronumero             ; Jump para retornar e colocar um numero correto
+        call limpa_tela
 
-                     menor9:                     ; Pula caso o Al for menor que 47
+        call segmento
 
-                            cmp al,'0'
-                            jge maior0                  ; Se o al for menor que 48 ele continua, caso contrario ele pula
+        call cabecalho1
 
-                            call pula 
+        call validanumero1
 
-                            lea dx,Numeroinvalido       
-                            mov ah,9
-                            int 21h
-                     
-                     jmp outronumero             ; Jump para retornar e colocar um numero correto
+        call validasinal            ; Chamada de funções 
+        
+        call validanumero2
 
-                     maior0:                     ; Pula quando o valor de al for maior de 48
+        call verifica_sinal
 
-                     mov op1,al                  ; Jogando o numero al para op1
+        call pula1
 
-                     call pula1
+        call continuacao1
 
-       ret 
-       validanumero1 endp
-
-       ; Validação dos numeros
-       validanumero2 proc
-
-              outronumero2:
-
-                     call pula1                  ; Função Pula linha
-
-                     lea dx,Instrucao2            
-                     mov ah,9                    ; Printa instrucao1
-                     int 21h
-
-                     mov ah,1                    ; Digitar o primeiro numero
-                     int 21h 
-
-                     cmp al, '9'                          
-                     jle Menor09                  ; Salta se AL for menor do que '9' caso contrario ele continua  
-
-                            call pula 
-
-                            lea dx,Numeroinvalido 
-                            mov ah,9
-                            int 21h
-                            
-                            jmp outronumero2             ; Jump para retornar e colocar um numero correto
-
-                     Menor09:                     ; Pula caso o Al for menor que 47
-
-                     cmp al,'0'
-                     jge Maior00                  ; Se o al for menor que 48 ele continua, caso contrario ele pula
-
-                            call pula 
-
-                            lea dx,Numeroinvalido       
-                            mov ah,9
-                            int 21h
-                            
-                     jmp outronumero             ; Jump para retornar e colocar um numero correto
-
-                     Maior00:                     ; Pula quando o valor de al for maior de 48
-
-                     mov op2,al                  ; Jogando o numero al para op1
-
-       ret 
-       validanumero2 endp
-
-       ; Função que verifica sinal
-       verifica_sinal proc
-
-              cmp operando,'+'                           ; Comparando o operando com '+'
-              je mais                                    ; Se o operando for igual ao simbolo '+' ele pula, caso contrario ele continua
-
-                     cmp operando,'-'                    ; Comparando o operando com '+'
-                     je menos                            ; Se o operando for igual ao simbolo '-' ele pula, caso contrario ele continua
-
-                            cmp operando,'*'             ; Comparando o operando com '*'
-                            je multi                     ; Se for igual ao '*' ele pula
-
-                                   cmp operando,'/'      ; Comparando operando com '/'
-                            
-                                          call limpa_tela      
-                                          call cabecalho1
-                                          call pula1                 ; Chamada de Funções
-                                          call resultado1
-                                          call divisao
-                                   
-                                   jmp fim
-
-                            multi:
-
-                                   call limpa_tela
-                                   call cabecalho1
-                                   call pula1                  ; Chamada de Funções
-                                   call resultado1
-                                   call multiplicacao
-                            
-                            jmp fim
-                                                 
-                     menos:                        ; Caso seja sinal de '-'
-
-                            call limpa_tela
-                            call cabecalho1
-                            call pula                   ; Chamada de Funções
-                            call subtracao               
-                     
-                     jmp fim                      
-
-              mais:                             ; Caso seja utlizado o sinal de '+'
-                                                 
-                     call limpa_tela
-                     call cabecalho1                       
-                     call pula                   ; Chamada de Funções
-                     call resultado1               
-                     call soma
-
-              fim:                                ; Pular para o fim do programa
-
-       ret
-       verifica_sinal endp
-
-       ; Função que limpa a tela
-       limpa_tela proc
-
-              mov ah, 00h
-              mov al, 03h
-              int 10h                     ; Comando com funcionalidade de limpar a tela 
-              mov cx, 02h
-
-              mov dh,1
-              mov dl,1
-              mov ah,02h
-              int 10h
-
-       ret
-       limpa_tela endp
-
-       ; Função que printa o cabeçalho
-       cabecalho1 proc
-
-              call pula
-              lea dx,cabecalho             ; Printa cabçalho
-              mov ah,9
-              int 21h
-
-              call pula
-              lea dx,Titulo
-              mov ah,9                     ; Printa Titulo
-              int 21h
-
-              call pula
-              lea dx,cabecalho             ; Printa cabeçalho
-              mov ah,9
-              int 21h
-
-       ret
-       cabecalho1 endp
-
-       ; Função que verifica se quer continuar ou não
-       continuacao1 proc
-
-              mov ah, 09
-              lea dx, continuacao         ; Printa continuação
-              int 21h
-
-              mov ah, 01                  ; Entrada de caracter
-              int 21h
-
-              cmp al, 'S'                 ; Se for digitado 'S' ou 's' ele vai pro começo do codigo,
-              je comeco                   ; e está pronto para começar uma nova operação
-              cmp al, 's'
-              je comeco
-
-       ret
-       continuacao1 endp
-
-       ; Função encerraento
-       final proc
-
-              mov ah,4ch                          ; Encerramento do programa 
-              int 21h
-
-       ret
-       final endp
-
-       ; Função pro segmento de data
-       segmento proc
-
-              mov ax,@data                 ; Move o segmento data para ax         
-              mov ds,ax
-
-       ret
-       segmento endp
-
-       main proc   
-
-              comeco:                     ; Jump condicional para a calculadora ser recomeçada
-
-              call limpa_tela
-
-              call segmento
-
-              call cabecalho1
-
-              call validanumero1
-
-              call validasinal            ; Chamada de funções 
-              
-              call validanumero2
-
-              call verifica_sinal
-
-              call pula1
-
-              call continuacao1
-
-              call final
-              
-              main endp
-       END main
+        call final
+        
+        main endp
+    END main
